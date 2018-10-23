@@ -18,10 +18,12 @@ endif()
 if (ParaView_USE_LATEST_PATCHABLE)
 endif()
 
+set(ttk_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ttk")
+
 # How we install TTK 
 ExternalProject_Add(TTK
     # General
-    SOURCE_DIR ttk
+    SOURCE_DIR "${ttk_SOURCE_DIR}"
     # Download step
         GIT_REPOSITORY https://github.com/topology-tool-kit/ttk.git
         GIT_TAG "${TTK_VERSION_TAG}"
@@ -29,7 +31,7 @@ ExternalProject_Add(TTK
         GIT_PROGRESS ON # Show progress to the user
     )
 
-set(ParaView_SOURCE_DIR)
+set(ParaView_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ParaView")
 # How we install ParaView
 ExternalProject_Add(ParaView
     # General
@@ -43,8 +45,8 @@ ExternalProject_Add(ParaView
         PATCH_COMMAND
             cd "${ParaView_SOURCE_DIR}"
             && git checkout HEAD # clean the repository
-            && cd \"ttk/paraview/patch\"
-            && \"./patch-paraview-${ParaView_VERSION_NUMBER}.sh\" \"ParaView\"
+            && cd "${ttk_SOURCE_DIR}/paraview/patch"
+            && "./patch-paraview-${ParaView_VERSION_NUMBER}.sh" "ParaView"
     )
 
 # expose some targets to:

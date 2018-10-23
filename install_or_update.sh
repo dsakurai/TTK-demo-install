@@ -12,7 +12,12 @@ echo "TODO What's the directory structure?"
 # abort on error
 set -e
 
-subscription_message="Send an empty email to ttk-users+subscribe@googlegroups.com to subscribe to TTK's user mailing list."
+#ttk_users_mail_subscribe='ttk-users+subscribe@googlegroups.com'
+ttk_users_mail_subscribe=XXXXXXXXXXXXX
+#ttk_users_mail='ttk-users+subscribe@googlegroups.com'
+ttk_users_mail=XXXXXXXXXXXX
+
+#subscription_message="Send an empty email to ${ttk_users_mail_subscribe} to subscribe to TTK's user mailing list."
 
 # Record the current directory
 old_dir=$PWD
@@ -31,12 +36,12 @@ trap cleanup ERR
 
 # Intro
 echo 
-echo "Welcome to TTK!"
-echo " - URL: https://topology-tool-kit.github.io"
-echo " - Mailing list:"
-echo "     - Subscribe? Send an empty email to ttk-users+subscribe@googlegroups.com"
-echo "     - Report problems to ttk-users@googlegroups.com after subscription"
-echo "     - Questions are highly welcome, too"
+echo "Welcome!"
+#echo " - URL: https://topology-tool-kit.github.io"
+#echo " - Mailing list:"
+#echo "     - Subscribe? Send an empty email to ${ttk_users_mail_subscribe}"
+#echo "     - Report problems to ${ttk_users_mail} after subscription"
+#echo "     - Questions are highly welcome, too"
 echo 
 echo
 echo "Dependencies are listed on the web page https://topology-tool-kit.github.io/installation.html"
