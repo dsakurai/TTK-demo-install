@@ -75,6 +75,7 @@ else
     echo "Insert a ParaView version tag that you wish to install."
     echo "To view available tags, visit https://github.com/Kitware/ParaView.git"
     echo "Hit enter to install the latest version (technically the default git branch)."
+    echo "WARNING!!! DO NOT MODIFY the contents controlled by ParaView's git working directory. This script may remove your work. If you have to, be sure to commit your changes before you continue with this script."
     read ParaView_VERSION_TAG
 fi
 
@@ -85,8 +86,11 @@ cmake . \
     "-DParaView_VERSION_TAG=$ParaView_VERSION_TAG"
 
 # build
+echo
 echo "The superproject is configured."
+echo
 echo "Proceed to build? [y]/n"
+echo "WARNING!!! A build will try to apply patches, removing all the changes you made in the git working directory of ParaView and so on."
 
 read -rsn1 yes
 if [[ $yes != n ]];

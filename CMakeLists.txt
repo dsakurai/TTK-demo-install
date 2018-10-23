@@ -21,7 +21,7 @@ endif()
 # How we install TTK 
 ExternalProject_Add(TTK
     # General
-        SOURCE_DIR ttk
+    SOURCE_DIR ttk
     # Download step
         GIT_REPOSITORY https://github.com/topology-tool-kit/ttk.git
         GIT_TAG "${TTK_VERSION_TAG}"
@@ -29,17 +29,22 @@ ExternalProject_Add(TTK
         GIT_PROGRESS ON # Show progress to the user
     )
 
+set(ParaView_SOURCE_DIR)
 # How we install ParaView
 ExternalProject_Add(ParaView
     # General
-        SOURCE_DIR ParaView
+        SOURCE_DIR "${ParaView_SOURCE_DIR}"
     # Download step
         GIT_REPOSITORY https://github.com/Kitware/ParaView.git
         GIT_TAG "${ParaView_VERSION_TAG}"
         GIT_SHALLOW ON # Do a shallow clone to save the disk space
         GIT_PROGRESS ON # Show progress to the user
     # Update / patch step
-    PATCH_COMMAND bash -c "cd paraview && git checkout HEAD && cd \"ttk/paraview/patch\" && \"./patch-paraview-${ParaView_VERSION_NUMBER}.sh\" \"ParaView\""
+        PATCH_COMMAND
+            cd "${ParaView_SOURCE_DIR}"
+            && git checkout HEAD # clean the repository
+            && cd \"ttk/paraview/patch\"
+            && \"./patch-paraview-${ParaView_VERSION_NUMBER}.sh\" \"ParaView\"
     )
 
 # expose some targets to:
