@@ -3,6 +3,7 @@ Email: d.sakurai@computer.org
 
 This is a semi-automatic script for installing a demo enviroment of [TTK](https://topology-tool-kit.github.io/installation.html).
 
+This is a work in progress. The scripts are unworkable at the moment.
 
 Before you do anything
 ----------------------
