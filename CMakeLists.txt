@@ -5,30 +5,21 @@ cmake_minimum_required(VERSION 3.10) # Downgrade / upgrade with will
 
 include(ExternalProject)
 
-# TTK version is set by the user?
-if (NOT "${TTK_VERSION_TAG}" STREQUAL "")
-    # Set version: (e.g. git tag v0.9.2 => 0.9.2)
-    string(REGEX MATCH "[^v]*$$" TTK_VERSION_NUMBER "${TTK_VERSION_TAG}")
-endif()
-# ParaView version is set by the user?
-if (NOT "${ParaView_VERSION_TAG}" STREQUAL "")
-    # Set version: (e.g. git tag v0.9.2 => 0.9.2)
-    string(REGEX MATCH "[^v]*$$" ParaView_VERSION_NUMBER "${ParaView_VERSION_TAG}")
-endif()
-if (ParaView_USE_LATEST_PATCHABLE)
-endif()
-
 set(ttk_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ttk")
 
 # How we install TTK 
 ExternalProject_Add(TTK
     # General
-    SOURCE_DIR "${ttk_SOURCE_DIR}"
+        SOURCE_DIR "${ttk_SOURCE_DIR}"
+        BINARY_DIR "${ttk_SOURCE_DIR}/build"
     # Download step
         GIT_REPOSITORY https://github.com/topology-tool-kit/ttk.git
         GIT_TAG "${TTK_VERSION_TAG}"
         GIT_SHALLOW ON # Do a shallow clone to save the disk space
         GIT_PROGRESS ON # Show progress to the user
+    # Configure step
+        CMAKE_ARGS
+            "-DCMAKE_BUILD_TYPE=${TTK_CMAKE_BUILD_TYPE}"
     )
 
 set(ParaView_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ParaView")
@@ -36,17 +27,22 @@ set(ParaView_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ParaView")
 ExternalProject_Add(ParaView
     # General
         SOURCE_DIR "${ParaView_SOURCE_DIR}"
+        BINARY_DIR "${ParaView_SOURCE_DIR}/build"
     # Download step
         GIT_REPOSITORY https://github.com/Kitware/ParaView.git
-        GIT_TAG "${ParaView_VERSION_TAG}"
+        #GIT_TAG "${ParaView_VERSION_TAG}"
         GIT_SHALLOW ON # Do a shallow clone to save the disk space
         GIT_PROGRESS ON # Show progress to the user
-    # Update / patch step
+    # Update step is disabled, because this is known by CMake people to conflict with the patch step
+        UPDATE_DISCONNECTED ON
+    # Patch step
         PATCH_COMMAND
-            cd "${ParaView_SOURCE_DIR}"
-            && git checkout HEAD # clean the repository
-            && cd "${ttk_SOURCE_DIR}/paraview/patch"
-            && "./patch-paraview-${ParaView_VERSION_NUMBER}.sh" "ParaView"
+            # This sets the git directory to the intended version before patching.
+            cd "${CMAKE_CURRENT_SOURCE_DIR}"
+            && ./utils/patch_command.sh
+    # Configure step
+        CMAKE_ARGS
+            "-DCMAKE_BUILD_TYPE=${ParaView_CMAKE_BUILD_TYPE}"
     )
 
 # expose some targets to:
@@ -59,7 +55,7 @@ ExternalProject_Add_StepTargets(
     )
 ExternalProject_Add_StepTargets(
     ParaView
-    download patch build install
+    download patch install
     )
 
 ExternalProject_Add_StepDependencies(ParaView patch
@@ -70,7 +66,7 @@ ExternalProject_Add_StepDependencies(ParaView download
     TTK-download
     )
 
-ExternalProject_Add_StepDependencies(TTK install
+ExternalProject_Add_StepDependencies(TTK build
     ParaView-install
     )
 
