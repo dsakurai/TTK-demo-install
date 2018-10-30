@@ -16,12 +16,14 @@ $ source <(curl -Ls https://github.com/dsakurai/TTK-demo-install/raw/master/util
 ~~~
 
 You are going to be asked several questions before TTK as well as ParaView are installed.
-The default installation directory is `TTK-demo-install/local`.
+The message will also direct you to the official TTK project page, on which you will find dependencies. Install them separately if you haven't done so.
+
+The default installation directory for the demo binaries is `TTK-demo-install/local`.
 On Linux, the ParaView executable will be installed as `installation_directory/bin/paraview` (`installation_directory` is the the installation directory you would have chosen.)
 
 Tips & Tricks
 -------------
-ParaView is built in `ParaView-prefix/src/ParaView-build`, while TTK in `TTK-prefix/src/TTK-build`. This means that you can customize your build by going into these directories and issuing `ccmake .` (or by directly editing the CMakeCache.txt files).
+ParaView is built inside the directory `ParaView-prefix/src/ParaView-build`, while TTK inside `TTK-prefix/src/TTK-build`. This means that you can customize your build by going into these directories and issuing `ccmake .` (or by directly editing the CMakeCache.txt files).
 To start the customization, you need to wait until their configuration is finished. You can restart the entire build by issuing `make` from the rood directory `TTK-demo-install`.
 
 Known Issues
