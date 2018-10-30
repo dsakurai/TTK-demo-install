@@ -9,7 +9,7 @@ A semi-automatic script that installs a demo enviroment of [TTK](https://topolog
 How To
 ------
 
-On Unix, run this bash command. It might work as well on zsh.
+On Unix, run the shell command below.
 This creates a new project named `TTK-demo-install` under the current directory.
 ~~~
 $ source <(curl -Ls https://github.com/dsakurai/TTK-demo-install/raw/master/utils/one_line_install.sh)
