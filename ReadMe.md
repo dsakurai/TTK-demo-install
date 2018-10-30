@@ -1,4 +1,4 @@
-Author: Daisuke Sakurai @ Zuse Institute Berlin (2018 Oct.)
+Author: Daisuke Sakurai @ Zuse Institute Berlin (2018 Oct.)  
 Email: d.sakurai@computer.org
 
 What's This Project About?
