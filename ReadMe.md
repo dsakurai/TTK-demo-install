@@ -32,15 +32,15 @@ To do so execute `TTK-demo-install/install_or_update.sh`. The directory doesn't 
 
 Known Issues
 ------------
-**Directory Structure**  
+**Directory Structure is Odd**  
 The directory structure is different from the one assumed in the TTK tutorial.
 When I tried to solve this problem, I hit the weird problem that CMake cannot create the directories automatically.
 
-**Parallel Build**  
+**Parallel Build is Slow**  
 Compiling ParaView in parallel doesn't work, at least on Ubuntu 18.
 As a workaround you may initially let ParaView compile in serial and switch to a parallel build afterwards. Actually, after hitting approximately 10% of the build process you can stop the build (hit ctrl-C) and manually issue make with parallelization enabled. The make command is `cd TTK-demo-install/ParaView-prefix/src/ParaView-build && make -jN`, where N shall be replaced with the number of threads you run for the build. After a successful build of your ParaView, go back to the root directory `TTK-demo-install`, and issue `make` to continue building the whole project.
 
-**Help Documentations**
+**Help Documentations is Missing**  
 I disabled the help system of ParaView as the required Qt help mechanism is hard to install on Ubuntu 18 if you don't have administrative rights.
 
 It is a good idea to activate the help, though. You need to switch on `PARAVIEW_USE_QTHELP` and `PARAVIEW_ENABLE_EMBEDDED_DOCUMENTATION` by issuing `ccmake .` from `ParaView-prefix/src/ParaView-build/` after the installation has finished. After the ccmake, issue `make` from the directory `TTK-demo-install` to apply the change.
