@@ -43,4 +43,4 @@ As a workaround you may initially let ParaView compile in serial and switch to a
 **Help Documentations**
 I disabled the help system of ParaView as the required Qt help mechanism is hard to install on Ubuntu 18 if you don't have administrative rights.
 
-It is a good idea to activate the help, though. You need to switch on `PARAVIEW_USE_QTHELP` and `PARAVIEW_ENABLE_EMBEDDED_DOCUMENTATION` by doing ccmake from `ParaView-prefix/src/ParaView-build/`.
+It is a good idea to activate the help, though. You need to switch on `PARAVIEW_USE_QTHELP` and `PARAVIEW_ENABLE_EMBEDDED_DOCUMENTATION` by issuing `ccmake .` from `ParaView-prefix/src/ParaView-build/` after the installation has finished. (Re-run `make` from `TTK-demo-install` to udpate the installation.)
