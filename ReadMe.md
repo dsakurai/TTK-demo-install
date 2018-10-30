@@ -6,7 +6,7 @@ What's This Project About?
 
 You can install a demo enviroment of [Topology ToolKit](https://topology-tool-kit.github.io/installation.html) (TTK) semi-automatically.
 
-There's no warranty as usual; utilize this project at your own risk and crate backups frequently.
+There's no warranty as usual; utilize this project at your own risk and back up your files frequently.
 
 How-To
 ------
