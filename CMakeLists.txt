@@ -14,7 +14,9 @@ set(Patch_dir "${CMAKE_CURRENT_SOURCE_DIR}/TTK-prefix/src/TTK/paraview/patch/")
 # Eg 5.5.2
 #execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/utils/latest_paraview_version_for_ttk.py" "${Patch_dir}" OUTPUT_VARIABLE ParaView_VERSION_NUMBER)
 # Eg 5.5
-execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/utils/latest_paraview_version_for_ttk.py" "${Patch_dir}" "--first_two" OUTPUT_VARIABLE ParaView_VERSION_NUMBER_FIRST_TWO)
+#execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/utils/latest_paraview_version_for_ttk.py" "${Patch_dir}" "--first_two" OUTPUT_VARIABLE ParaView_VERSION_NUMBER_FIRST_TWO)
+
+#message(FATAL_ERROR "-DParaView_DIR=${CMAKE_INSTALL_PREFIX}/lib/cmake/paraview-$("${CMAKE_CURRENT_SOURCE_DIR}/utils/latest_paraview_version_for_ttk.py" "${Patch_dir}" "--first_two")")
 
 # How we install TTK 
 ExternalProject_Add(TTK
@@ -27,7 +29,7 @@ ExternalProject_Add(TTK
         CMAKE_ARGS
             "-DCMAKE_BUILD_TYPE=${TTK_CMAKE_BUILD_TYPE}"
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
-            "-DParaView_DIR=${CMAKE_INSTALL_PREFIX}/lib/cmake/paraview-$$("${CMAKE_CURRENT_SOURCE_DIR}/utils/latest_paraview_version_for_ttk.py" "${Patch_dir}" "--first_two")"
+            "-DParaView_DIR=${CMAKE_INSTALL_PREFIX}/lib/cmake/paraview-$("${CMAKE_CURRENT_SOURCE_DIR}/utils/latest_paraview_version_for_ttk.py" "${Patch_dir}" "--first_two")"
     # Build step
         BUILD_ALWAYS ON # Ensure that the build will run regardless of time stamp
         BUILD_COMMAND make VERBOSE=ON "-j${Num_Processors}" # verbose output for the sake of communication in mailing list
@@ -45,7 +47,7 @@ ExternalProject_Add(ParaView
         PATCH_COMMAND
             cd "${CMAKE_CURRENT_SOURCE_DIR}"
             # patch ParaView: pass the version number
-            && ./utils/patch_command.sh "${Patch_dir}" $$("${CMAKE_CURRENT_SOURCE_DIR}/utils/latest_paraview_version_for_ttk.py" "${Patch_dir}")
+            && ./utils/patch_command.sh "${Patch_dir}" $("${CMAKE_CURRENT_SOURCE_DIR}/utils/latest_paraview_version_for_ttk.py" "${Patch_dir}")
     # Configure step
         CMAKE_ARGS
             # Mandatory
