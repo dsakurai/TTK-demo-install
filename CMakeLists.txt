@@ -7,11 +7,15 @@ include(ExternalProject)
 
 set(ttk_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ttk")
 
+message(FATAL_ERROR Assuming ParaView 5.5)
+message(FATAL_ERROR Bad path settings for ParaView)
+
 # How we install TTK 
 ExternalProject_Add(TTK
     # General
         SOURCE_DIR "${ttk_SOURCE_DIR}"
-        BINARY_DIR "${ttk_SOURCE_DIR}/build"
+        # This doesn't work. I don't know why...
+        #BINARY_DIR "${ttk_SOURCE_DIR}/build-${TTK_CMAKE_BUILD_TYPE}"
     # Download step
         GIT_REPOSITORY https://github.com/topology-tool-kit/ttk.git
         GIT_TAG "${TTK_VERSION_TAG}"
@@ -20,6 +24,11 @@ ExternalProject_Add(TTK
     # Configure step
         CMAKE_ARGS
             "-DCMAKE_BUILD_TYPE=${TTK_CMAKE_BUILD_TYPE}"
+            "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
+            "-DParaView_DIR=${CMAKE_INSTALL_PREFIX}/lib/cmake/paraview-5.5"
+    # Build step
+        BUILD_ALWAYS ON # Ensure that the build will run regardless of time stamp
+        BUILD_COMMAND make VERBOSE=ON -j16 # verbose output for the sake of communication in mailing list
     )
 
 set(ParaView_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ParaView")
@@ -27,6 +36,7 @@ set(ParaView_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ParaView")
 ExternalProject_Add(ParaView
     # General
         SOURCE_DIR "${ParaView_SOURCE_DIR}"
+        # TODO remove this line
         BINARY_DIR "${ParaView_SOURCE_DIR}/build"
     # Download step
         GIT_REPOSITORY https://github.com/Kitware/ParaView.git
@@ -39,10 +49,15 @@ ExternalProject_Add(ParaView
         PATCH_COMMAND
             # This sets the git directory to the intended version before patching.
             cd "${CMAKE_CURRENT_SOURCE_DIR}"
-            && ./utils/patch_command.sh
+            && ./utils/patch_command.sh "${CMAKE_CURRENT_SOURCE_DIR}/ttk/paraview/patch/"
     # Configure step
         CMAKE_ARGS
             "-DCMAKE_BUILD_TYPE=${ParaView_CMAKE_BUILD_TYPE}"
+            "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
+            "-DPARAVIEW_INSTALL_DEVELOPMENT_FILES=ON"
+    # Build step
+    #BUILD_ALWAYS ON # Ensure that the build will run regardless of time stamp
+        BUILD_COMMAND make VERBOSE=ON -j16 # verbose output for the sake of communication in mailing list
     )
 
 # expose some targets to:
@@ -51,11 +66,11 @@ ExternalProject_Add(ParaView
 #        - E.g. TTK install <- Paraview install <- ParaView patch <- TTK download
 ExternalProject_Add_StepTargets(
     TTK
-    download install
+    download build install
     )
 ExternalProject_Add_StepTargets(
     ParaView
-    download patch install
+    download patch build
     )
 
 ExternalProject_Add_StepDependencies(ParaView patch
@@ -67,6 +82,6 @@ ExternalProject_Add_StepDependencies(ParaView download
     )
 
 ExternalProject_Add_StepDependencies(TTK build
-    ParaView-install
+    ParaView-build
     )
 

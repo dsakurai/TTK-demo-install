@@ -83,6 +83,9 @@ echo
 echo "Enter the build type of ParaView: [Release]/RelWithDebInfo/Debug"
 read ParaView_CMAKE_BUILD_TYPE
 ParaView_CMAKE_BUILD_TYPE=${ParaView_CMAKE_BUILD_TYPE:-Release}
+echo "Enter the install location: (Default: ${PWD}/local)"
+read CMAKE_INSTALL_PREFIX
+CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX:-${PWD}/local}
 
 echo "Before configuring this superproject..."
 echo "Do you wish to issue make commands manually right after we configure the system? y/[n]"
@@ -96,7 +99,8 @@ cmake . \
     "-DCMAKE_BUILD_TYPE=Release" \
     "-DTTK_CMAKE_BUILD_TYPE=${TTK_CMAKE_BUILD_TYPE}" \
     "-DParaView_CMAKE_BUILD_TYPE=${ParaView_CMAKE_BUILD_TYPE}" \
-    "-DTTK_VERSION_TAG=$TTK_version_tag"
+    "-DTTK_VERSION_TAG=$TTK_version_tag" \
+    "-DCMAKE_INSTALL_PREFIX=$CMAKE_INSTALL_PREFIX"
 
 # build
 echo

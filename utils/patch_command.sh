@@ -5,7 +5,9 @@ set -e
 #TODO pass through input args
 root_dir="${PWD}"
 
-ParaView_VERSION_NUMBER="`./utils/latest_paraview_version_for_ttk.py ${ttk_SOURCE_DIR}/paraview/patch`"
+patch_dir="$1"
+
+ParaView_VERSION_NUMBER="$(./utils/latest_paraview_version_for_ttk.py "$patch_dir")"
 
 # download the version
 # git fetch origin "${version_tag}:${version_tag}"
@@ -22,7 +24,7 @@ git submodule update -f --init --recursive .
 popd
 
 # Patch ParaView
-pushd "ttk/paraview/patch"
+pushd "${patch_dir}"
 "./patch-paraview-${ParaView_VERSION_NUMBER}.sh" "${root_dir}/ParaView"
 
 popd
