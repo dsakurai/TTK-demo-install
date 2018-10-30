@@ -9,11 +9,12 @@ A semi-automatic script that installs a demo enviroment of [Topology ToolKit](ht
 How To
 ------
 
-On Unix, run the shell command below.
-This creates a new project named `TTK-demo-install` under the current directory.
+On Unix, run the one-liner shell command below.
 ~~~
 $ source <(curl -Ls https://github.com/dsakurai/TTK-demo-install/raw/master/utils/one_line_install.sh)
 ~~~
+This creates a new project named `TTK-demo-install` under your current directory.
+The script will automatically download this project and start the installation wizard.
 
 You are going to be asked several questions before TTK as well as ParaView are installed.
 The message will also direct you to the official TTK project page, on which you will find dependencies. Install them separately if you haven't done so.
