@@ -16,13 +16,12 @@ Yep, you have been warned.
 For other usual warnings, read the license file that ships with this project.
 I am happy to change the license to something more suitable.
 
-How TO
+How To
 ------
-First, do a git clone.
 
-On Unix: 
+On Unix, run this bash command. It might work as well on zsh.
 ~~~
-$ ./install_or_update.sh
+$ source <(curl -Ls https://github.com/dsakurai/TTK-demo-install/raw/master/one_line_install.sh)
 ~~~
 Just continue hitting enter, and you'll get a TTK demo environment.
 
