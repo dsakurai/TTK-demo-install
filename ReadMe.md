@@ -21,5 +21,5 @@ How To
 
 On Unix, run this bash command. It might work as well on zsh.
 ~~~
-$ source <(curl -Ls https://github.com/dsakurai/TTK-demo-install/raw/master/one_line_install.sh)
+$ source <(curl -Ls https://github.com/dsakurai/TTK-demo-install/raw/master/utils/one_line_install.sh)
 ~~~
