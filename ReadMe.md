@@ -9,7 +9,7 @@ You can install a demo enviroment of [Topology ToolKit](https://topology-tool-ki
 How-To
 ------
 
-On Unix, run the one-liner shell command below.
+On a Unix system, run the one-liner shell command below.
 ~~~
 $ source <(curl -Ls https://github.com/dsakurai/TTK-demo-install/raw/master/utils/one_line_install.sh)
 ~~~
