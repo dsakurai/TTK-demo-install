@@ -30,7 +30,7 @@ Known Issues
 ------------
 **Directory Structure**  
 The directory structure is different from the one assumed in the TTK tutorial.
-When I tried to solve this problem, I hit the weird problem that CMake cannot create the directories automatically. (Even worse, they deleted directories that I created!)
+When I tried to solve this problem, I hit the weird problem that CMake cannot create the directories automatically.
 
 **Parallel Build**  
 Compiling ParaView in parallel doesn't work, at least on Ubuntu 18 (I don't know exactly why.)
