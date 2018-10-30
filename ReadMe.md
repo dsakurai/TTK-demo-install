@@ -4,7 +4,7 @@ Email: d.sakurai@computer.org
 What's This Project?
 --------------------
 
-A semi-automatic script that installs a demo enviroment of [Topology ToolKit](https://topology-tool-kit.github.io/installation.html) (TTK).
+A semi-automatic script that installs a demo enviroment of [Topology ToolKit](https://topology-tool-kit.github.io/installation.html) (TTK) for you.
 
 How To
 ------
