@@ -26,6 +26,9 @@ Tips & Tricks
 ParaView is built inside the directory `ParaView-prefix/src/ParaView-build`, while TTK inside `TTK-prefix/src/TTK-build`. This means that you can customize your build by going into these directories and issuing `ccmake .` (or by directly editing the CMakeCache.txt files).
 To start the customization, you need to wait until their configuration is finished. You can restart the entire build by issuing `make` from the rood directory `TTK-demo-install`.
 
+You can also update an existing demo that you installed through this project.
+To do so execute `TTK-demo-install/install_or_update.sh`.
+
 Known Issues
 ------------
 **Directory Structure**  
