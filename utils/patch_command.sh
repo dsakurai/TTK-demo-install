@@ -12,20 +12,22 @@ ParaView_VERSION_NUMBER="$(./utils/latest_paraview_version_for_ttk.py "$patch_di
 # download the version
 # git fetch origin "${version_tag}:${version_tag}"
 # checkout the version
-pushd ParaView 
-git reset --hard HEAD
-git clean -fd
+ParaView_git_dir="${root_dir}/ParaView-prefix/src/ParaView"
+
+pushd "${ParaView_git_dir}"
+
 echo git checkout...
-git checkout "v${ParaView_VERSION_NUMBER}"
+git checkout "v${ParaView_VERSION_NUMBER}" || \
+    echo git checkout failed. \ngit reset --hard HEAD \necho git clean -fd
 echo git checkout end...
 
 # update the submodules
-git submodule update -f --init --recursive .
+git submodule update --init --recursive .
 popd
 
 # Patch ParaView
 pushd "${patch_dir}"
-"./patch-paraview-${ParaView_VERSION_NUMBER}.sh" "${root_dir}/ParaView"
+"./patch-paraview-${ParaView_VERSION_NUMBER}.sh" "${ParaView_git_dir}"
 
 popd
 

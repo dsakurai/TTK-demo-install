@@ -5,7 +5,7 @@ set -e
 # Email: d.sakurai@computer.org
 
 echo CAREFUL!!!
-echo "Re-running this script will remove your unsaved work inside the demo directory this script has created. (This removal is a workaround to the complexity of patching.) Are you sure you want to continue? y/[n]"
+echo "Re-running this script may change the position in the git log. Are you sure you want to continue? y/[n]"
 read -rsn1 yes && [[ $yes != y ]] && exit 0
 
 echo "TODO This script should change the directory to the tutorial directory after a successful installation."
@@ -13,15 +13,6 @@ echo "TODO Install VTK, too?"
 echo "TODO one-liner curl commnand"
 echo "TODO Email to TTK-dev (not -users)"
 echo "TODO What's the directory structure?"
-
-# abort on error
-
-#ttk_users_mail_subscribe='ttk-users+subscribe@googlegroups.com'
-ttk_users_mail_subscribe=XXXXXXXXXXXXX
-#ttk_users_mail='ttk-users+subscribe@googlegroups.com'
-ttk_users_mail=XXXXXXXXXXXX
-
-#subscription_message="Send an empty email to ${ttk_users_mail_subscribe} to subscribe to TTK's user mailing list."
 
 # Record the current directory
 old_dir=$PWD
@@ -41,11 +32,6 @@ trap cleanup ERR
 # Intro
 echo 
 echo "Welcome!"
-#echo " - URL: https://topology-tool-kit.github.io"
-#echo " - Mailing list:"
-#echo "     - Subscribe? Send an empty email to ${ttk_users_mail_subscribe}"
-#echo "     - Report problems to ${ttk_users_mail} after subscription"
-#echo "     - Questions are highly welcome, too"
 echo 
 echo
 echo "Dependencies are listed on the web page https://topology-tool-kit.github.io/installation.html"
@@ -116,12 +102,5 @@ if [[ $manual_make = y ]];
         exit 0
 fi
 
-#
 make
-
-# Fin.
-#echo
-#echo ---------------------------------------
-#echo "TTK developers love to hear from you."
-#echo "${subscription_message}"
 
