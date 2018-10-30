@@ -33,7 +33,7 @@ To do so execute `TTK-demo-install/install_or_update.sh`. The directory doesn't 
 Known Issues
 ------------
 **Directory Structure is Odd**  
-The directory structure is different from the one assumed in the TTK tutorial.
+The directory structure differs from the one assumed in the TTK tutorial.
 When I tried to solve this problem, I hit the weird problem that CMake cannot create the directories automatically.
 
 **Parallel Build is Slow**  
