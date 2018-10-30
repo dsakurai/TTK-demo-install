@@ -23,6 +23,3 @@ On Unix, run this bash command. It might work as well on zsh.
 ~~~
 $ source <(curl -Ls https://github.com/dsakurai/TTK-demo-install/raw/master/one_line_install.sh)
 ~~~
-Just continue hitting enter, and you'll get a TTK demo environment.
-
-A oneliner script that skips manual git-clone is in the plan.
