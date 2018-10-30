@@ -17,4 +17,4 @@ $ source <(curl -Ls https://github.com/dsakurai/TTK-demo-install/raw/master/util
 
 You are going to be asked several questions, before TTK as well as ParaView are installed.
 The default installation directory is `TTK-demo-install/local`.
-On a Linux, the ParaView executable is installed as `installation_directory/bin/paraview`, where `installation_directory` is the the installation directory you have chosen.
+On Linux, the ParaView executable will be installed as `installation_directory/bin/paraview` (`installation_directory` is the the installation directory you have chosen.)
