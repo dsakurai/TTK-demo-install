@@ -17,7 +17,7 @@ This creates a new project named `TTK-demo-install` under your current directory
 The script will automatically download this project and start the installation wizard.
 
 You are going to be asked several questions before TTK as well as ParaView are installed.
-The message will also direct you to the official TTK project page, on which you will find software dependencies. At this stage, install them separately if you haven't done yet.
+The message will also direct you to the official TTK project page, on which you will find the software dependencies of TTK (and ParaView). At this stage, install them separately if you haven't done yet.
 
 The default installation directory for the demo binaries is `TTK-demo-install/local`.
 On Linux, the ParaView executable will be installed as `installation_directory/bin/paraview` (`installation_directory` is the the installation directory you would have chosen.)
