@@ -1,12 +1,12 @@
 Author: Daisuke Sakurai @ Zuse Institute Berlin (2018 Oct.)
 Email: d.sakurai@computer.org
 
-What's This Project?
---------------------
+What's This Project About?
+--------------------------
 
-A semi-automatic script that installs a demo enviroment of [Topology ToolKit](https://topology-tool-kit.github.io/installation.html) (TTK) for you.
+You can install a demo enviroment of [Topology ToolKit](https://topology-tool-kit.github.io/installation.html) (TTK) semi-automatically.
 
-How To
+How-To
 ------
 
 On Unix, run the one-liner shell command below.
