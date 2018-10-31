@@ -36,6 +36,9 @@ Known Issues
 ------------
 **Qt Version**  
 Qt 5.9 is recommended. If your build fails with an error message like `member access into incomplete type 'QAbstractItemView'`, make sure that CMake is pointing to the right Qt installation.
+Modify the variable `Qt5_DIR` in CMake to specify a Qt cmake configuration.
+The value should be something like `~/Qt/5.9.7/clang_64/lib/cmake/Qt5` if you installed Qt using the official Qt installer.
+Other Qt directories s.a. `QtWidgets_DIR` should be left empty so that CMake finds the directories properly.
 
 **Directory Structure is Odd**  
 The directory structure differs from the one assumed in the TTK tutorial.
