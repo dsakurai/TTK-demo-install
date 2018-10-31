@@ -41,7 +41,7 @@ Qt 5.9 is recommended. Make sure that CMake is pointing to the right Qt installa
 The directory structure differs from the one assumed in the TTK tutorial.
 When I tried to solve this problem, I hit the weird problem that CMake cannot create the directories automatically.
 
-**ParaView Build is not Parallelized**  
+**Building ParaView is not Parallelized**  
 Compiling ParaView in parallel doesn't work, at least on Ubuntu 18.
 As a workaround you may initially let ParaView compile in serial and switch to a parallel build afterwards. Actually, after hitting approximately 10% of the build process you can stop the build (hit ctrl-C) and manually issue make with parallelization enabled. The make command is `cd TTK-demo-install/ParaView-prefix/src/ParaView-build && make -jN`, where N shall be replaced with the number of threads you run for the build. After a successful build of your ParaView, go back to the root directory `TTK-demo-install` and issue `make` to continue building the whole project.
 
