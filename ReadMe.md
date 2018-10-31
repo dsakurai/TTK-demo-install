@@ -34,7 +34,7 @@ To do so execute `TTK-demo-install/install_or_update.sh`. The directory doesn't 
 
 Known Issues
 ------------
-**Qt Version**
+**Qt Version**  
 Qt 5.9 is recommended. Make sure that CMake is pointing to the right Qt installation in case the installation fails.
 
 **Directory Structure is Odd**  
