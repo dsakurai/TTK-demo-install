@@ -1,10 +1,10 @@
-Author: Daisuke Sakurai @ Zuse Institute Berlin (2018 Oct.)  
+Author: Daisuke Sakurai
 Email: d.sakurai@computer.org
 
-What's This Project About?
---------------------------
+About
+-----
 
-You can install a demo enviroment of [Topology ToolKit](https://topology-tool-kit.github.io/installation.html) (TTK) semi-automatically.
+You can install a demo enviroment of [Topology ToolKit](https://topology-tool-kit.github.io/installation.html) (TTK) semi-automatically with this project.
 
 There's no warranty as usual; utilize this project at your own risk and back up your files frequently.
 
@@ -34,6 +34,9 @@ To do so execute `TTK-demo-install/install_or_update.sh`. The directory doesn't 
 
 Known Issues
 ------------
+**Qt Version**
+Qt 5.9 is recommended. Make sure that CMake is pointing to the right Qt installation in case the installation fails.
+
 **Directory Structure is Odd**  
 The directory structure differs from the one assumed in the TTK tutorial.
 When I tried to solve this problem, I hit the weird problem that CMake cannot create the directories automatically.
