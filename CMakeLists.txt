@@ -11,6 +11,13 @@ ProcessorCount(Num_Processors)
 
 set(Patch_dir "${CMAKE_CURRENT_SOURCE_DIR}/TTK-prefix/src/TTK/paraview/patch/")
 
+# Check if OpenMP is available
+find_package(OpenMP)
+set(TTK_ENABLE_OPENMP OFF)
+if(OPENMP_FOUND)
+    set(TTK_ENABLE_OPENMP ON)
+endif()
+
 # How we install TTK 
 ExternalProject_Add(TTK
     # Download step
@@ -22,6 +29,7 @@ ExternalProject_Add(TTK
         CMAKE_ARGS
             "-DCMAKE_BUILD_TYPE=${TTK_CMAKE_BUILD_TYPE}"
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
+            "-DTTK_ENABLE_OPENMP=${TTK_ENABLE_OPENMP}"
             "\"-DParaView_DIR=${CMAKE_INSTALL_PREFIX}/lib/cmake/paraview-$(\"${CMAKE_CURRENT_SOURCE_DIR}/utils/latest_paraview_version_for_ttk.py\" \"${Patch_dir}\" \"--first_two\")\""
     # Build step
         BUILD_ALWAYS ON # Ensure that the build will run regardless of time stamp
