@@ -35,7 +35,7 @@ To do so execute `TTK-demo-install/install_or_update.sh`. The directory doesn't 
 Known Issues
 ------------
 **Qt Version**  
-Qt 5.9 is recommended. If your build fails with an error message like `member access into incomplete type 'QAbstractItemView'`, make sure that CMake is pointing to the right Qt installation in case the installation fails.
+Qt 5.9 is recommended. If your build fails with an error message like `member access into incomplete type 'QAbstractItemView'`, make sure that CMake is pointing to the right Qt installation.
 
 **Directory Structure is Odd**  
 The directory structure differs from the one assumed in the TTK tutorial.
