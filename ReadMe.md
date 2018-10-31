@@ -30,7 +30,7 @@ ParaView is built inside the directory `ParaView-prefix/src/ParaView-build`, whi
 To start the customization, you need to wait until their configuration is finished. You can restart the entire build by issuing `make` from the rood directory `TTK-demo-install`.
 
 You can also update an existing demo that you installed through this project.
-To do so execute `TTK-demo-install/install_or_update.sh`. It doesn't matter in which directory you are in. The script will automaticall change the current directory to `TTK-demo-install`.
+To do so execute `TTK-demo-install/install_or_update.sh`. It doesn't matter in which directory you are in.
 
 Known Issues
 ------------
