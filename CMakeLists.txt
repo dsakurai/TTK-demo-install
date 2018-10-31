@@ -56,6 +56,8 @@ ExternalProject_Add(ParaView
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
             "-DPARAVIEW_INSTALL_DEVELOPMENT_FILES=ON"
 
+            "-DMACOSX_APP_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}/local/Applications"
+
             # Dependency not installed by default on some Linux machines
             "-DPARAVIEW_USE_QTHELP=OFF"
             "-DPARAVIEW_ENABLE_EMBEDDED_DOCUMENTATION=OFF"
