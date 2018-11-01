@@ -9,7 +9,6 @@ include(ProcessorCount)
 # number of cores on this system.
 ProcessorCount(Num_Processors)
 
-set(Patch_dir "${CMAKE_CURRENT_SOURCE_DIR}/TTK-prefix/src/TTK/paraview/patch/")
 
 # Check if OpenMP is available
 find_package(OpenMP)
@@ -18,19 +17,41 @@ if(OPENMP_FOUND)
     set(TTK_ENABLE_OPENMP ON)
 endif()
 
+if (TTK_VERSION_TAG)
+    set(TTK_GIT_BRANCH "-b ${TTK_VERSION_TAG}")
+endif()
+
+set(TTK_DOWNLOWAD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/TTK-prefix/src/TTK")
+set(Patch_dir "${TTK_DOWNLOWAD_DIR}/paraview/patch/")
+
+# clone
+execute_process(COMMAND echo hello)
+if (TTK_GIT_BRANCH)
+    execute_process(COMMAND git clone "${TTK_GIT_BRANCH}" https://github.com/topology-tool-kit/ttk.git "${TTK_DOWNLOWAD_DIR}")
+else()
+    execute_process(COMMAND git clone https://github.com/topology-tool-kit/ttk.git "${TTK_DOWNLOWAD_DIR}")
+endif()
+execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/utils/latest_paraview_version_for_ttk.py" "${Patch_dir}" "--first_two" OUTPUT_VARIABLE ParaView_VERSION_NUMBER_FIRST_TWO)
+
+# Set where ParaView configuration file is located.
+if(APPLE) # Mac
+    set(ParaView_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ParaView-prefix/src/ParaView-build")
+    set(Set_arg_TTK_INSTALL_PLUGIN_DIR "-DTTK_INSTALL_PLUGIN_DIR=${CMAKE_INSTALL_PREFIX}/Applications/paraview.app/Contents/Plugins")
+elseif(UNIX) # Linux
+    set(ParaView_DIR "${CMAKE_INSTALL_PREFIX}/lib/cmake/paraview-${ParaView_VERSION_NUMBER_FIRST_TWO}")
+else()
+    message(FATAL_ERROR "Could not determine the operating system.")
+endif()
+
 # How we install TTK 
 ExternalProject_Add(TTK
-    # Download step
-        GIT_REPOSITORY https://github.com/topology-tool-kit/ttk.git
-        GIT_TAG "${TTK_VERSION_TAG}"
-        GIT_SHALLOW ON # Do a shallow clone to save the disk space
-        GIT_PROGRESS ON # Show progress to the user
     # Configure step
         CMAKE_ARGS
+            "-DParaView_DIR=${ParaView_DIR}"
             "-DCMAKE_BUILD_TYPE=${TTK_CMAKE_BUILD_TYPE}"
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
             "-DTTK_ENABLE_OPENMP=${TTK_ENABLE_OPENMP}"
-            "\"-DParaView_DIR=${CMAKE_INSTALL_PREFIX}/lib/cmake/paraview-$(\"${CMAKE_CURRENT_SOURCE_DIR}/utils/latest_paraview_version_for_ttk.py\" \"${Patch_dir}\" \"--first_two\")\""
+            "${Set_arg_TTK_INSTALL_PLUGIN_DIR}"
     # Build step
         BUILD_ALWAYS ON # Ensure that the build will run regardless of time stamp
         BUILD_COMMAND make VERBOSE=ON "-j${Num_Processors}" # verbose output for the sake of communication in mailing list
@@ -44,7 +65,7 @@ ExternalProject_Add(ParaView
         GIT_PROGRESS ON # Show progress to the user
     # Update step is disabled, because this is known by CMake people to conflict with the patch step
         UPDATE_DISCONNECTED ON
-    # Patch step
+    # Patch step: will also update the code version through the version control system.
         PATCH_COMMAND
             cd "${CMAKE_CURRENT_SOURCE_DIR}"
             # patch ParaView: pass the version number
@@ -56,16 +77,14 @@ ExternalProject_Add(ParaView
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
             "-DPARAVIEW_INSTALL_DEVELOPMENT_FILES=ON"
 
-            "-DMACOSX_APP_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}/local/Applications"
+            "-DMACOSX_APP_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}/Applications"
 
-            # Dependency not installed by default on some Linux machines
+            # Turn off the help system since IT departments sometimes forget to install the Qt5 help framework
             "-DPARAVIEW_USE_QTHELP=OFF"
             "-DPARAVIEW_ENABLE_EMBEDDED_DOCUMENTATION=OFF"
 
             # Nice to have
             "-DPARAVIEW_ENABLE_PYTHON=ON"
-            # Load ICON data
-            "-DPARAVIEW_AUTOLOAD_PLUGIN_CDIReader=ON"
             # Enable some nice tools
             "-DPARAVIEW_AUTOLOAD_PLUGIN_EmbossingRepresentations=ON"
             "-DPARAVIEW_AUTOLOAD_PLUGIN_ArrowGlyph=ON"
@@ -76,11 +95,13 @@ ExternalProject_Add(ParaView
             "-DPARAVIEW_AUTOLOAD_PLUGIN_StreamingParticles=ON"
             "-DPARAVIEW_AUTOLOAD_PLUGIN_SurfaceLIC=ON"
             "-DPARAVIEW_AUTOLOAD_PLUGIN_ThickenLayeredCells=ON"
-            #"-DPARAVIEW_ENABLE_FFMPEG=ON"
-    # Build step
-        BUILD_COMMAND make VERBOSE=ON
-        # Faster, but this parallel build fails due to some oddness...
-        #BUILD_COMMAND make VERBOSE=ON "-j${Num_Processors}"
+            # Load ICON data
+            "-DPARAVIEW_AUTOLOAD_PLUGIN_CDIReader=ON"
+        # Build step
+            BUILD_ALWAYS ON # Ensure that the build will run regardless of time stamp
+            BUILD_COMMAND make VERBOSE=ON
+            # Faster, but this parallel build fails due to some oddness...
+            #BUILD_COMMAND make VERBOSE=ON "-j${Num_Processors}"
     )
 
 # expose some targets to:
@@ -93,7 +114,7 @@ ExternalProject_Add_StepTargets(
     )
 ExternalProject_Add_StepTargets(
     ParaView
-    download patch build
+    download patch build install
     )
 
 ExternalProject_Add_StepDependencies(ParaView patch
@@ -106,6 +127,7 @@ ExternalProject_Add_StepDependencies(ParaView download
     )
 
 ExternalProject_Add_StepDependencies(TTK build
-    ParaView-build
+    #ParaView-build
+    ParaView-install
     )
 
