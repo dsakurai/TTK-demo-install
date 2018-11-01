@@ -25,7 +25,6 @@ set(TTK_DOWNLOWAD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/TTK-prefix/src/TTK")
 set(Patch_dir "${TTK_DOWNLOWAD_DIR}/paraview/patch/")
 
 # clone
-execute_process(COMMAND echo hello)
 if (TTK_GIT_BRANCH)
     execute_process(COMMAND git clone "${TTK_GIT_BRANCH}" https://github.com/topology-tool-kit/ttk.git "${TTK_DOWNLOWAD_DIR}")
 else()
@@ -36,7 +35,10 @@ execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/utils/latest_paraview_versi
 # Set where ParaView configuration file is located.
 if(APPLE) # Mac
     set(ParaView_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ParaView-prefix/src/ParaView-build")
-    set(Set_arg_TTK_INSTALL_PLUGIN_DIR "-DTTK_INSTALL_PLUGIN_DIR=${CMAKE_INSTALL_PREFIX}/Applications/paraview.app/Contents/Plugins")
+
+    set(Set_arg_TTK_INSTALL_PLUGIN_DIR "-DTTK_INSTALL_PLUGIN_DIR=${CMAKE_INSTALL_PREFIX}/Applications/paraview.app/Contents/MacOS/plugins")
+    # The version follows the TTK tutorial which installs the TTK plugins into the built ParaView, as opposed to the installed ParaView.
+    #set(Set_arg_TTK_INSTALL_PLUGIN_DIR "-DTTK_INSTALL_PLUGIN_DIR=${CMAKE_CURRENT_SOURCE_DIR}/ParaView-prefix/src/ParaView-build/bin/paraview.app/Contents/MacOS/plugins")
 elseif(UNIX) # Linux
     set(ParaView_DIR "${CMAKE_INSTALL_PREFIX}/lib/cmake/paraview-${ParaView_VERSION_NUMBER_FIRST_TWO}")
 else()
@@ -100,7 +102,7 @@ ExternalProject_Add(ParaView
         # Build step
             BUILD_ALWAYS ON # Ensure that the build will run regardless of time stamp
             BUILD_COMMAND make VERBOSE=ON
-            # Faster, but this parallel build fails due to some oddness...
+            # A parallel build is faster, but it fails due to some oddity...
             #BUILD_COMMAND make VERBOSE=ON "-j${Num_Processors}"
     )
 
