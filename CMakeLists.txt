@@ -32,6 +32,8 @@ else()
 endif()
 execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/utils/latest_paraview_version_for_ttk.py" "${Patch_dir}" "--first_two" OUTPUT_VARIABLE ParaView_VERSION_NUMBER_FIRST_TWO)
 
+set(MACOSX_APP_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/Applications")
+
 # Set where ParaView configuration file is located.
 if(APPLE) # Mac
     set(ParaView_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ParaView-prefix/src/ParaView-build")
@@ -79,7 +81,7 @@ ExternalProject_Add(ParaView
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
             "-DPARAVIEW_INSTALL_DEVELOPMENT_FILES=ON"
 
-            "-DMACOSX_APP_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}/Applications"
+            "-DMACOSX_APP_INSTALL_PREFIX=${MACOSX_APP_INSTALL_PREFIX}"
 
             # Turn off the help system since IT departments sometimes forget to install the Qt5 help framework
             "-DPARAVIEW_USE_QTHELP=OFF"
@@ -105,6 +107,16 @@ ExternalProject_Add(ParaView
             # A parallel build is faster, but it fails due to some oddity...
             #BUILD_COMMAND make VERBOSE=ON "-j${Num_Processors}"
     )
+
+if (APPLE)
+    ExternalProject_Add_Step(ParaView Data
+        COMMAND
+            cd "${CMAKE_CURRENT_SOURCE_DIR}" &&
+            mkdir -p "${MACOSX_APP_INSTALL_PREFIX}/paraview.app/Contents/share/paraview-${ParaView_VERSION_NUMBER_FIRST_TWO}" && 
+            cp -r "TTK-prefix/src/TTK/paraview/patch/data" "${MACOSX_APP_INSTALL_PREFIX}/paraview.app/Contents/share/paraview-${ParaView_VERSION_NUMBER_FIRST_TWO}/"
+        ALWAYS ON # Execute this always to simplify the management of this project
+        )
+endif()
 
 # expose some targets to:
 #    - let the user fine-tune the installation
@@ -133,3 +145,8 @@ ExternalProject_Add_StepDependencies(TTK build
     ParaView-install
     )
 
+if (APPLE)
+    ExternalProject_Add_StepDependencies(ParaView Data
+        TTK-build # Actualy TTK-update or TTK-patch. But as the update & patch are known to be tricky to handle, we simply use build instead.
+        )
+endif()
