@@ -4,7 +4,7 @@ Email: d.sakurai@computer.org
 About
 -----
 
-You can install a demo enviroment of [Topology ToolKit](https://topology-tool-kit.github.io/installation.html) (TTK) semi-automatically with this project. OpenMP is enabled when detected, but the installation contains only minimal features in order for the install to succeed in various environments.
+This project lets you install a demo enviroment of [Topology ToolKit](https://topology-tool-kit.github.io/installation.html) (TTK) semi-automatically with a single command. OpenMP is enabled when detected, but the installation contains only minimal features in order for the install to succeed in various environments.
 
 There's no warranty as usual; utilize this project at your own risk and back up your files frequently.
 
