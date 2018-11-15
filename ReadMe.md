@@ -4,7 +4,7 @@ Email: d.sakurai@computer.org
 About
 -----
 
-This project lets you install [Topology ToolKit](https://topology-tool-kit.github.io/installation.html) (TTK) semi-automatically with a single command. The installation contains only minimal features to avoid build failures. (OpenMP-based parallelization is enabled whenever detected.)
+This project lets you install [Topology ToolKit](https://topology-tool-kit.github.io/installation.html) (TTK) semi-automatically with a single command. The installation contains only minimal features in order to avoid build failures. (OpenMP-based parallelization is enabled whenever detected.)
 
 There's no warranty as usual; utilize this project at your own risk and back up your files frequently.
 
