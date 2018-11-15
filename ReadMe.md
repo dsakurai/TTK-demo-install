@@ -1,4 +1,4 @@
-Author: Daisuke Sakurai
+Author: Daisuke Sakurai  
 Email: d.sakurai@computer.org
 
 About
