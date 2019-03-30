@@ -81,6 +81,7 @@ echo "WARNING!!! Issuing 'make' will REMOVE the changes you made in the git work
 read -rsn1 manual_make
 
 # configure the superproject
+mkdir build && cd build
 cmake . \
     "-DCMAKE_BUILD_TYPE=Release" \
     "-DTTK_CMAKE_BUILD_TYPE=${TTK_CMAKE_BUILD_TYPE}" \

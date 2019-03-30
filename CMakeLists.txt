@@ -21,14 +21,14 @@ if (TTK_VERSION_TAG)
     set(TTK_GIT_BRANCH "-b ${TTK_VERSION_TAG}")
 endif()
 
-set(TTK_DOWNLOWAD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/TTK-prefix/src/TTK")
-set(Patch_dir "${TTK_DOWNLOWAD_DIR}/paraview/patch/")
+set(TTK_DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/TTK-prefix/src/TTK")
+set(Patch_dir "${TTK_DOWNLOAD_DIR}/paraview/patch/")
 
 # clone
 if (TTK_GIT_BRANCH)
-    execute_process(COMMAND git clone "${TTK_GIT_BRANCH}" https://github.com/topology-tool-kit/ttk.git "${TTK_DOWNLOWAD_DIR}")
+    execute_process(COMMAND git clone "${TTK_GIT_BRANCH}" https://github.com/topology-tool-kit/ttk.git "${TTK_DOWNLOAD_DIR}")
 else()
-    execute_process(COMMAND git clone https://github.com/topology-tool-kit/ttk.git "${TTK_DOWNLOWAD_DIR}")
+    execute_process(COMMAND git clone https://github.com/topology-tool-kit/ttk.git "${TTK_DOWNLOAD_DIR}")
 endif()
 execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/utils/latest_paraview_version_for_ttk.py" "${Patch_dir}" "--first_two" OUTPUT_VARIABLE ParaView_VERSION_NUMBER_FIRST_TWO)
 
@@ -36,11 +36,11 @@ set(MACOSX_APP_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/Applications")
 
 # Set where ParaView configuration file is located.
 if(APPLE) # Mac
-    set(ParaView_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ParaView-prefix/src/ParaView-build")
+    set(ParaView_DIR "${CMAKE_CURRENT_BINARY_DIR}/ParaView-prefix/src/ParaView-build")
 
     set(Set_arg_TTK_INSTALL_PLUGIN_DIR "-DTTK_INSTALL_PLUGIN_DIR=${CMAKE_INSTALL_PREFIX}/Applications/paraview.app/Contents/MacOS/plugins")
     # The version follows the TTK tutorial which installs the TTK plugins into the built ParaView, as opposed to the installed ParaView.
-    #set(Set_arg_TTK_INSTALL_PLUGIN_DIR "-DTTK_INSTALL_PLUGIN_DIR=${CMAKE_CURRENT_SOURCE_DIR}/ParaView-prefix/src/ParaView-build/bin/paraview.app/Contents/MacOS/plugins")
+    #set(Set_arg_TTK_INSTALL_PLUGIN_DIR "-DTTK_INSTALL_PLUGIN_DIR=${CMAKE_BINARY_SOURCE_DIR}/ParaView-prefix/src/ParaView-build/bin/paraview.app/Contents/MacOS/plugins")
 elseif(UNIX) # Linux
     set(ParaView_DIR "${CMAKE_INSTALL_PREFIX}/lib/cmake/paraview-${ParaView_VERSION_NUMBER_FIRST_TWO}")
 else()
@@ -49,6 +49,7 @@ endif()
 
 # How we install TTK 
 ExternalProject_Add(TTK
+        SOURCE_DIR "${TTK_DOWNLOAD_DIR}"
     # Configure step
         CMAKE_ARGS
             "-DParaView_DIR=${ParaView_DIR}"
@@ -73,7 +74,7 @@ ExternalProject_Add(ParaView
         PATCH_COMMAND
             cd "${CMAKE_CURRENT_SOURCE_DIR}"
             # patch ParaView: pass the version number
-            && ./utils/patch_command.sh "${Patch_dir}" $("${CMAKE_CURRENT_SOURCE_DIR}/utils/latest_paraview_version_for_ttk.py" "${Patch_dir}")
+            && "${CMAKE_CURRENT_SOURCE_DIR}/utils/patch_command.sh" "${Patch_dir}" "${CMAKE_CURRENT_BINARY_DIR}" $("${CMAKE_CURRENT_SOURCE_DIR}/utils/latest_paraview_version_for_ttk.py" "${Patch_dir}")
     # Configure step
         CMAKE_ARGS
             # Mandatory
@@ -111,7 +112,7 @@ ExternalProject_Add(ParaView
 if (APPLE)
     ExternalProject_Add_Step(ParaView Data
         COMMAND
-            cd "${CMAKE_CURRENT_SOURCE_DIR}" &&
+            cd "${CMAKE_CURRENT_BINARY_DIR}" &&
             mkdir -p "${MACOSX_APP_INSTALL_PREFIX}/paraview.app/Contents/share/paraview-${ParaView_VERSION_NUMBER_FIRST_TWO}" && 
             cp -r "TTK-prefix/src/TTK/paraview/patch/data" "${MACOSX_APP_INSTALL_PREFIX}/paraview.app/Contents/share/paraview-${ParaView_VERSION_NUMBER_FIRST_TWO}/"
         ALWAYS ON # Execute this always to simplify the management of this project
