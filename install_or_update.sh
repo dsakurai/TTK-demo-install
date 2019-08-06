@@ -82,7 +82,7 @@ read -rsn1 manual_make
 
 # configure the superproject
 mkdir build && cd build
-cmake . \
+cmake .. \
     "-DCMAKE_BUILD_TYPE=Release" \
     "-DTTK_CMAKE_BUILD_TYPE=${TTK_CMAKE_BUILD_TYPE}" \
     "-DParaView_CMAKE_BUILD_TYPE=${ParaView_CMAKE_BUILD_TYPE}" \
