@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.10) # Downgrade / upgrade with will
+project(TTK_Demo_Install)
 
 # Author: Daisuke Sakurai @ Zuse Institute Berlin (2018 Oct.)
 # Email: d.sakurai@computer.org
@@ -8,6 +9,8 @@ include(ExternalProject)
 include(ProcessorCount)
 # number of cores on this system.
 ProcessorCount(Num_Processors)
+
+message(WARNING "TODO: Move on to git submodules instead of cloning git repos from within CMakeLists.txt. The current behavior may remove local git history.")
 
 
 # Check if OpenMP is available
@@ -47,8 +50,34 @@ else()
     message(FATAL_ERROR "Could not determine the operating system.")
 endif()
 
+set(OSPRay_version 1.7.3)
+
+if (APPLE)
+    set(OSPRay_URL "https://github.com/ospray/ospray/releases/download/v${OSPRay_version}/ospray-${OSPRay_version}.x86_64.macosx.tar.gz")
+else(APPLE)
+    # presumably linux
+    set(OSPRay_URL "https://github.com/ospray/ospray/releases/download/v${OSPRay_version}/ospray-${OSPRay_version}.x86_64.linux.tar.gz")
+endiF(APPLE)
+
+#set(com "for each in ${CMAKE_CURRENT_BINARY_DIR}/OSPRay-prefix/src/OSPRay/*; do echo cp -rp \"\${each}\" ${CMAKE_INSTALL_PREFIX}; done\n")
+#string(STRIP "${com}" com)
+#execute_process(COMMAND bash -c "${com}")
+#message(FATAL_ERROR "com: ${com}")
+
+# OSPRay
+ExternalProject_Add(OSPRay
+    #Download (macOS)
+        INSTALL_DIR "${CMAKE_INSTALL_PREFIX}"
+        URL "${OSPRay_URL}"
+        DOWNLOAD_NO_EXTRACT
+        CONFIGURE_COMMAND "" # nothing to do for configuration
+        BUILD_COMMAND "" # nothing to build
+        INSTALL_COMMAND bash -c "${CMAKE_CURRENT_SOURCE_DIR}/utils/install_ospray.sh ${CMAKE_CURRENT_BINARY_DIR}/OSPRay-prefix/src/OSPRay ${CMAKE_INSTALL_PREFIX}"
+    )
+
 # How we install TTK 
 ExternalProject_Add(TTK
+        INSTALL_DIR "${CMAKE_INSTALL_PREFIX}"
         SOURCE_DIR "${TTK_DOWNLOAD_DIR}"
     # Configure step
         CMAKE_ARGS
@@ -64,6 +93,7 @@ ExternalProject_Add(TTK
 
 # How we install ParaView
 ExternalProject_Add(ParaView
+        INSTALL_DIR "${CMAKE_INSTALL_PREFIX}"
     # Download step
         GIT_REPOSITORY https://github.com/Kitware/ParaView.git
         GIT_SHALLOW ON # Do a shallow clone to save the disk space
@@ -88,8 +118,12 @@ ExternalProject_Add(ParaView
             "-DPARAVIEW_USE_QTHELP=OFF"
             "-DPARAVIEW_ENABLE_EMBEDDED_DOCUMENTATION=OFF"
 
+            # OSPRay
+            "-DPARAVIEW_USE_OSPRAY=ON"
+            "-DOSPRAY_INSTALL_DIR=${CMAKE_INSTALL_PREFIX}/lib/cmake/ospray-${OSPRay_version}"
             # Nice to have
             "-DPARAVIEW_ENABLE_PYTHON=ON"
+            "-DPARAVIEW_ENABLE_FFMPEG=ON"
             # Enable some nice tools
             "-DPARAVIEW_AUTOLOAD_PLUGIN_EmbossingRepresentations=ON"
             "-DPARAVIEW_AUTOLOAD_PLUGIN_ArrowGlyph=ON"
@@ -104,7 +138,7 @@ ExternalProject_Add(ParaView
             "-DPARAVIEW_AUTOLOAD_PLUGIN_CDIReader=ON"
         # Build step
             BUILD_ALWAYS ON # Ensure that the build will run regardless of time stamp
-            BUILD_COMMAND make VERBOSE=ON
+            #BUILD_COMMAND make VERBOSE=ON
             # A parallel build is faster, but it fails due to some oddity...
             #BUILD_COMMAND make VERBOSE=ON "-j${Num_Processors}"
     )
@@ -144,6 +178,13 @@ ExternalProject_Add_StepDependencies(ParaView download
 ExternalProject_Add_StepDependencies(TTK build
     #ParaView-build
     ParaView-install
+    )
+
+ExternalProject_Add_StepDependencies(ParaView download
+    OSPRay
+    )
+ExternalProject_Add_StepDependencies(TTK download
+    OSPRay
     )
 
 if (APPLE)
