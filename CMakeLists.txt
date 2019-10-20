@@ -20,16 +20,12 @@ if(OPENMP_FOUND)
     set(TTK_ENABLE_OPENMP ON)
 endif()
 
-if (TTK_VERSION_TAG)
-    set(TTK_GIT_BRANCH "-b ${TTK_VERSION_TAG}")
-endif()
-
 set(TTK_DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/TTK-prefix/src/TTK")
 set(Patch_dir "${TTK_DOWNLOAD_DIR}/paraview/patch/")
 
 # clone
-if (TTK_GIT_BRANCH)
-    execute_process(COMMAND git clone "${TTK_GIT_BRANCH}" https://github.com/topology-tool-kit/ttk.git "${TTK_DOWNLOAD_DIR}")
+if (TTK_VERSION_TAG)
+    execute_process(COMMAND git clone -b "${TTK_VERSION_TAG}" https://github.com/topology-tool-kit/ttk.git "${TTK_DOWNLOAD_DIR}")
 else()
     execute_process(COMMAND git clone https://github.com/topology-tool-kit/ttk.git "${TTK_DOWNLOAD_DIR}")
 endif()
