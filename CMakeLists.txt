@@ -134,8 +134,8 @@ ExternalProject_Add(ParaView
             "-DPARAVIEW_AUTOLOAD_PLUGIN_CDIReader=ON"
         # Build step
             BUILD_ALWAYS ON # Ensure that the build will run regardless of time stamp
-            #BUILD_COMMAND make VERBOSE=ON
             # A parallel build is faster, but it fails due to some oddity...
+            BUILD_COMMAND make "-j${Num_Processors}"
             #BUILD_COMMAND make VERBOSE=ON "-j${Num_Processors}"
     )
 
