@@ -34,7 +34,7 @@ To do so execute `TTK-demo-install/install_or_update.sh`. It doesn't matter in w
 Known Issues
 ------------
 **Qt Version**  
-Some Qt versions do not work with particular ParaView versions. Qt 5.9 is recommended for ParaView 5.5. If your build fails with an error message like `member access into incomplete type 'QAbstractItemView'`, make sure that CMake is pointing to the right Qt installation.
+Some Qt versions do not work with particular ParaView versions. Qt 5.9 is recommended for ParaView 5.6. If your build fails with an error message like `member access into incomplete type 'QAbstractItemView'`, make sure that CMake is pointing to the right Qt installation.
 Modify the variable `Qt5_DIR` in CMake to specify a Qt cmake configuration.
 The value should be something like `~/Qt/5.9.7/clang_64/lib/cmake/Qt5` if you installed Qt using the official Qt installer.
 Other Qt directories s.a. `QtWidgets_DIR` should be left empty so that CMake finds the directories properly.
@@ -43,7 +43,7 @@ Other Qt directories s.a. `QtWidgets_DIR` should be left empty so that CMake fin
 The directory structure differs from the one assumed in the TTK tutorial.
 When I tried to solve this problem, I hit the weird problem that CMake cannot create the directories automatically.
 
-**Building ParaView is not Parallelized**  
+**Building ParaView Failes When Parallelized**  
 Compiling ParaView in parallel doesn't work, at least on Ubuntu 18.
 As a workaround you may initially let ParaView compile in serial and switch to a parallel build afterwards. Actually, after hitting approximately 10% of the build process you can stop the build (hit ctrl-C) and manually issue make with parallelization enabled. The make command is `cd TTK-demo-install/ParaView-prefix/src/ParaView-build && make -jN`, where N shall be replaced with the number of threads you run for the build. After a successful build of your ParaView, go back to the root directory `TTK-demo-install` and issue `make` to continue building the whole project.
 
