@@ -31,6 +31,10 @@ To start the customization, you need to wait until their configuration is finish
 You can also update an existing demo that you installed through this project.
 To do so execute `TTK-demo-install/install_or_update.sh`. It doesn't matter in which directory you are in.
 
+If something fails, you can continue the build in the cmake build directory `TTK-demo-install/build`.
+Each project like ParaView is in the prefix directory named like `TTK-demo-install/build/ParaView-prefix`.
+The build directory of a project can be found in, continuing with ParaView as an example, `TTK-demo-install/build/ParaView-prefix/src/ParaView-build/`.
+
 Known Issues
 ------------
 **Qt Version**  
