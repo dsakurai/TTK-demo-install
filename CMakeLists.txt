@@ -12,6 +12,8 @@ ProcessorCount(Num_Processors)
 
 message(WARNING "TODO: Move on to git submodules instead of cloning git repos from within CMakeLists.txt. The current behavior may remove local git history.")
 
+find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
+
 
 # Check if OpenMP is available
 find_package(OpenMP)
@@ -71,7 +73,10 @@ ExternalProject_Add(OSPRay
         INSTALL_COMMAND bash -c "${CMAKE_CURRENT_SOURCE_DIR}/utils/install_ospray.sh ${CMAKE_CURRENT_BINARY_DIR}/OSPRay-prefix/src/OSPRay ${CMAKE_INSTALL_PREFIX}"
     )
 
-# How we install TTK 
+set(ParaView_CMAKE_BUILD_TYPE Release CACHE STRING "Build type for CMake")
+set(TTK_CMAKE_BUILD_TYPE Release CACHE STRING "Build type for TTK")
+
+# How we install TTK
 ExternalProject_Add(TTK
         INSTALL_DIR "${CMAKE_INSTALL_PREFIX}"
         SOURCE_DIR "${TTK_DOWNLOAD_DIR}"
@@ -82,8 +87,14 @@ ExternalProject_Add(TTK
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
             "-DTTK_ENABLE_OPENMP=${TTK_ENABLE_OPENMP}"
             "${Set_arg_TTK_INSTALL_PLUGIN_DIR}"
+            "-D" "CMAKE_C_COMPILER=${CMAKE_C_COMPILER}"
+            "-D" "CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}"
+
+            "-DPYTHON_EXECUTABLE=${Python3_EXECUTABLE}"
+            "-DPYTHON_INCLUDE_DIRS=${Python3_INCLUDE_DIRS}"
+            "-DPYTHON_LIBRARIES=${Python3_LIBRARIES}"
+
     # Build step
-        BUILD_ALWAYS ON # Ensure that the build will run regardless of time stamp
         BUILD_COMMAND make VERBOSE=ON "-j${Num_Processors}" # verbose output for the sake of communication in mailing list
     )
 
@@ -94,13 +105,13 @@ ExternalProject_Add(ParaView
         GIT_REPOSITORY https://github.com/Kitware/ParaView.git
         GIT_SHALLOW ON # Do a shallow clone to save the disk space
         GIT_PROGRESS ON # Show progress to the user
-    # Update step is disabled, because this is known by CMake people to conflict with the patch step
+    # Update step is disabled, because this is known to conflict with the patch step
         UPDATE_DISCONNECTED ON
-    # Patch step: will also update the code version through the version control system.
+    # Patch step: will also update the code version using the version control system.
         PATCH_COMMAND
             cd "${CMAKE_CURRENT_SOURCE_DIR}"
             # patch ParaView: pass the version number
-            && "${CMAKE_CURRENT_SOURCE_DIR}/utils/patch_command.sh" "${Patch_dir}" "${CMAKE_CURRENT_BINARY_DIR}" $("${CMAKE_CURRENT_SOURCE_DIR}/utils/latest_paraview_version_for_ttk.py" "${Patch_dir}")
+            && "${CMAKE_CURRENT_SOURCE_DIR}/utils/checkout_and_patch.sh" "${Patch_dir}" "${CMAKE_CURRENT_BINARY_DIR}" $("${CMAKE_CURRENT_SOURCE_DIR}/utils/latest_paraview_version_for_ttk.py" "${Patch_dir}")
     # Configure step
         CMAKE_ARGS
             # Mandatory
@@ -110,15 +121,22 @@ ExternalProject_Add(ParaView
 
             "-DMACOSX_APP_INSTALL_PREFIX=${MACOSX_APP_INSTALL_PREFIX}"
 
+            "-DPYTHON_EXECUTABLE=${Python3_EXECUTABLE}"
+            "-DPYTHON_INCLUDE_DIRS=${Python3_INCLUDE_DIRS}"
+            "-DPYTHON_LIBRARY=${Python3_LIBRARIES}"
+            "-DPYTHON_LIBRARIES=${Python3_LIBRARIES}"
+            "-DVTK_PYTHON_VERSION=3"
+
             # Turn off the help system since IT departments sometimes forget to install the Qt5 help framework
-            "-DPARAVIEW_USE_QTHELP=OFF"
-            "-DPARAVIEW_ENABLE_EMBEDDED_DOCUMENTATION=OFF"
+            "-DPARAVIEW_USE_QTHELP=ON"
+            "-DPARAVIEW_ENABLE_EMBEDDED_DOCUMENTATION=ON"
 
             # OSPRay
             "-DPARAVIEW_USE_OSPRAY=ON"
             "-DOSPRAY_INSTALL_DIR=${CMAKE_INSTALL_PREFIX}/lib/cmake/ospray-${OSPRay_version}"
             # Nice to have
-            "-DPARAVIEW_ENABLE_PYTHON=ON"
+            "-DPARAVIEW_USE_PYTHON=ON"
+            "-DPARAVIEW_ENABLE_PYTHON=ON" # for old ParaViews
             "-DPARAVIEW_ENABLE_FFMPEG=ON"
             # Enable some nice tools
             "-DPARAVIEW_AUTOLOAD_PLUGIN_EmbossingRepresentations=ON"
@@ -133,7 +151,6 @@ ExternalProject_Add(ParaView
             # Load ICON data
             "-DPARAVIEW_AUTOLOAD_PLUGIN_CDIReader=ON"
         # Build step
-            BUILD_ALWAYS ON # Ensure that the build will run regardless of time stamp
             # A parallel build is faster, but it fails due to some oddity...
             BUILD_COMMAND make "-j${Num_Processors}"
             #BUILD_COMMAND make VERBOSE=ON "-j${Num_Processors}"
@@ -143,7 +160,7 @@ if (APPLE)
     ExternalProject_Add_Step(ParaView Data
         COMMAND
             cd "${CMAKE_CURRENT_BINARY_DIR}" &&
-            mkdir -p "${MACOSX_APP_INSTALL_PREFIX}/paraview.app/Contents/share/paraview-${ParaView_VERSION_NUMBER_FIRST_TWO}" && 
+            mkdir -p "${MACOSX_APP_INSTALL_PREFIX}/paraview.app/Contents/share/paraview-${ParaView_VERSION_NUMBER_FIRST_TWO}" &&
             cp -r "TTK-prefix/src/TTK/paraview/patch/data" "${MACOSX_APP_INSTALL_PREFIX}/paraview.app/Contents/share/paraview-${ParaView_VERSION_NUMBER_FIRST_TWO}/"
         ALWAYS ON # Execute this always to simplify the management of this project
         )
