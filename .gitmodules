@@ -1,0 +1,6 @@
+[submodule "TTK"]
+	path = TTK
+	url = https://github.com/topology-tool-kit/ttk.git
+[submodule "ParaView"]
+	path = ParaView
+	url = https://github.com/Kitware/ParaView.git

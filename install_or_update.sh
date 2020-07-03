@@ -5,8 +5,6 @@ set -e
 # Email: d.sakurai@computer.org
 
 echo CAREFUL!!!
-echo "Re-running this script may change the position in the git log. Are you sure you want to continue? y/[n]"
-read -rsn1 yes && [[ $yes != y ]] && exit 0
 
 echo "TODO This script should change the directory to the tutorial directory after a successful installation."
 echo "TODO Install VTK, too?"
@@ -44,7 +42,7 @@ read -rsn1 yes && [[ $yes = y ]] && cat TTKContributorNotes.md
 echo
 
 echo "Insert a TTK version tag that you wish to install. To view available tags, visit https://github.com/topology-tool-kit/ttk". Alternatively, you can enter any git tree-ish.
-echo "Hit enter to install the latest version (technically the default git branch)."
+echo "Hit enter to install the default version for this time."
 read TTK_version_tag
 
 # get the current directory
@@ -76,9 +74,11 @@ CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX:-${PWD}/local}
 echo "Before configuring this superproject..."
 echo "Do you wish to issue make commands manually right after we configure the system? y/[n]"
 #
-echo "WARNING!!! Issuing 'make' will REMOVE the changes you made in the git working directories such as those of TTK and ParaView."
-#
 read -rsn1 manual_make
+
+git submodule update --init --recursive .
+# checkout TTK version
+[[ ! -z "$TTK_version_tag" ]] && ( cd TTK && git checkout $TTK_version_tag )
 
 # configure the superproject
 mkdir -p build  && cd build
@@ -86,7 +86,6 @@ cmake .. \
     "-DCMAKE_BUILD_TYPE=Release" \
     "-DTTK_CMAKE_BUILD_TYPE=${TTK_CMAKE_BUILD_TYPE}" \
     "-DParaView_CMAKE_BUILD_TYPE=${ParaView_CMAKE_BUILD_TYPE}" \
-    "-DTTK_VERSION_TAG=$TTK_version_tag" \
     "-DCMAKE_INSTALL_PREFIX=$CMAKE_INSTALL_PREFIX"
 
 # build

@@ -10,8 +10,6 @@ include(ProcessorCount)
 # number of cores on this system.
 ProcessorCount(Num_Processors)
 
-message(WARNING "TODO: Move on to git submodules instead of cloning git repos from within CMakeLists.txt. The current behavior may remove local git history.")
-
 find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 
 
@@ -22,15 +20,10 @@ if(OPENMP_FOUND)
     set(TTK_ENABLE_OPENMP ON)
 endif()
 
-set(TTK_DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/TTK-prefix/src/TTK")
-set(Patch_dir "${TTK_DOWNLOAD_DIR}/paraview/patch/")
+set(TTK_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/TTK" CACHE PATH "Path to the TTK source")
+set(PARAVIEW_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ParaView")
+set(Patch_dir "${TTK_SOURCE_DIR}/paraview/patch/")
 
-# clone
-if (TTK_VERSION_TAG)
-    execute_process(COMMAND git clone -b "${TTK_VERSION_TAG}" https://github.com/topology-tool-kit/ttk.git "${TTK_DOWNLOAD_DIR}")
-else()
-    execute_process(COMMAND git clone https://github.com/topology-tool-kit/ttk.git "${TTK_DOWNLOAD_DIR}")
-endif()
 execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/utils/latest_paraview_version_for_ttk.py" "${Patch_dir}" "--first_two" OUTPUT_VARIABLE ParaView_VERSION_NUMBER_FIRST_TWO)
 
 set(MACOSX_APP_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/Applications")
@@ -79,7 +72,7 @@ set(TTK_CMAKE_BUILD_TYPE Release CACHE STRING "Build type for TTK")
 # How we install TTK
 ExternalProject_Add(TTK
         INSTALL_DIR "${CMAKE_INSTALL_PREFIX}"
-        SOURCE_DIR "${TTK_DOWNLOAD_DIR}"
+        SOURCE_DIR "${TTK_SOURCE_DIR}"
     # Configure step
         CMAKE_ARGS
             "-DParaView_DIR=${ParaView_DIR}"
@@ -101,17 +94,14 @@ ExternalProject_Add(TTK
 # How we install ParaView
 ExternalProject_Add(ParaView
         INSTALL_DIR "${CMAKE_INSTALL_PREFIX}"
-    # Download step
-        GIT_REPOSITORY https://github.com/Kitware/ParaView.git
-        GIT_SHALLOW ON # Do a shallow clone to save the disk space
-        GIT_PROGRESS ON # Show progress to the user
+        SOURCE_DIR "${PARAVIEW_SOURCE_DIR}"
     # Update step is disabled, because this is known to conflict with the patch step
         UPDATE_DISCONNECTED ON
     # Patch step: will also update the code version using the version control system.
         PATCH_COMMAND
             cd "${CMAKE_CURRENT_SOURCE_DIR}"
             # patch ParaView: pass the version number
-            && "${CMAKE_CURRENT_SOURCE_DIR}/utils/checkout_and_patch.sh" "${Patch_dir}" "${CMAKE_CURRENT_BINARY_DIR}" $("${CMAKE_CURRENT_SOURCE_DIR}/utils/latest_paraview_version_for_ttk.py" "${Patch_dir}")
+            && "${CMAKE_CURRENT_SOURCE_DIR}/utils/checkout_and_patch.sh" "${Patch_dir}" "${PARAVIEW_SOURCE_DIR}" $("${CMAKE_CURRENT_SOURCE_DIR}/utils/latest_paraview_version_for_ttk.py" "${Patch_dir}")
     # Configure step
         CMAKE_ARGS
             # Mandatory
@@ -153,7 +143,6 @@ ExternalProject_Add(ParaView
         # Build step
             # A parallel build is faster, but it fails due to some oddity...
             BUILD_COMMAND make "-j${Num_Processors}"
-            #BUILD_COMMAND make VERBOSE=ON "-j${Num_Processors}"
     )
 
 if (APPLE)
@@ -161,7 +150,7 @@ if (APPLE)
         COMMAND
             cd "${CMAKE_CURRENT_BINARY_DIR}" &&
             mkdir -p "${MACOSX_APP_INSTALL_PREFIX}/paraview.app/Contents/share/paraview-${ParaView_VERSION_NUMBER_FIRST_TWO}" &&
-            cp -r "TTK-prefix/src/TTK/paraview/patch/data" "${MACOSX_APP_INSTALL_PREFIX}/paraview.app/Contents/share/paraview-${ParaView_VERSION_NUMBER_FIRST_TWO}/"
+            cp -r "${TTK_SOURCE_DIR}/paraview/patch/data" "${MACOSX_APP_INSTALL_PREFIX}/paraview.app/Contents/share/paraview-${ParaView_VERSION_NUMBER_FIRST_TWO}/"
         ALWAYS ON # Execute this always to simplify the management of this project
         )
 endif()
