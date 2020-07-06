@@ -91,9 +91,21 @@ ExternalProject_Add(TTK
         BUILD_COMMAND make VERBOSE=ON "-j${Num_Processors}" # verbose output for the sake of communication in mailing list
     )
 
+set(PARAVIEW_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+
+set(PARAVIEW_INSTALL_COMMAND INSTALL_COMMAND make -j${Num_Processors} install)
+
+if (APPLE)
+    set(PARAVIEW_INSTALL_COMMAND 
+        ${PARAVIEW_INSTALL_COMMAND}
+        && install_name_tool -add_rpath @executable_path/../lib/ "${CMAKE_INSTALL_PREFIX}/bin/pvpython"
+        && install_name_tool -add_rpath @executable_path/../lib/ "${CMAKE_INSTALL_PREFIX}/bin/pvpython"
+        )
+endiF(APPLE)
+
 # How we install ParaView
 ExternalProject_Add(ParaView
-        INSTALL_DIR "${CMAKE_INSTALL_PREFIX}"
+        INSTALL_DIR "${PARAVIEW_INSTALL_PREFIX}"
         SOURCE_DIR "${PARAVIEW_SOURCE_DIR}"
     # Update step is disabled, because this is known to conflict with the patch step
         UPDATE_DISCONNECTED ON
@@ -143,6 +155,9 @@ ExternalProject_Add(ParaView
         # Build step
             # A parallel build is faster, but it fails due to some oddity...
             BUILD_COMMAND make "-j${Num_Processors}"
+        # Install step
+            # Fix bug in pvpython's install name list
+            "${PARAVIEW_INSTALL_COMMAND}"
     )
 
 if (APPLE)
