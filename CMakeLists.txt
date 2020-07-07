@@ -41,7 +41,12 @@ else()
     message(FATAL_ERROR "Could not determine the operating system.")
 endif()
 
-set(OSPRay_version 1.7.3)
+set(OSPRay_version 1.8.5)
+
+if(ParaView_VERSION_NUMBER_FIRST_TWO STREQUAL "5.6")
+    # ParaView 5.6 works with an old OSPRay
+    set(OSPRay_version 1.7.3)
+endif()
 
 if (APPLE)
     set(OSPRay_URL "https://github.com/ospray/ospray/releases/download/v${OSPRay_version}/ospray-${OSPRay_version}.x86_64.macosx.tar.gz")
@@ -52,7 +57,6 @@ endiF(APPLE)
 
 # OSPRay
 ExternalProject_Add(OSPRay
-    #Download (macOS)
         INSTALL_DIR "${CMAKE_INSTALL_PREFIX}"
         URL "${OSPRay_URL}"
         DOWNLOAD_NO_EXTRACT
@@ -91,9 +95,10 @@ set(PARAVIEW_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 set(PARAVIEW_INSTALL_COMMAND INSTALL_COMMAND make -j${Num_Processors} install)
 
 if (APPLE)
+    # MacOS tends to have problems on rpaths 
     set(PARAVIEW_INSTALL_COMMAND 
         ${PARAVIEW_INSTALL_COMMAND}
-        && install_name_tool -add_rpath @executable_path/../lib/ "${CMAKE_INSTALL_PREFIX}/bin/pvpython"
+        && install_name_tool -add_rpath "${CMAKE_INSTALL_PREFIX}/lib/" "${CMAKE_INSTALL_PREFIX}/Applications/paraview.app/Contents/MacOS/paraview"
         && install_name_tool -add_rpath @executable_path/../lib/ "${CMAKE_INSTALL_PREFIX}/bin/pvpython"
         )
 endiF(APPLE)
@@ -129,7 +134,8 @@ ExternalProject_Add(ParaView
             "-DPARAVIEW_ENABLE_EMBEDDED_DOCUMENTATION=ON"
 
             # OSPRay
-            "-DPARAVIEW_USE_OSPRAY=ON"
+            -D PARAVIEW_ENABLE_RAYTRACING=ON
+            -D PARAVIEW_USE_OSPRAY=ON # for old ParaView versions
             "-DOSPRAY_INSTALL_DIR=${CMAKE_INSTALL_PREFIX}/lib/cmake/ospray-${OSPRay_version}"
             # Nice to have
             "-DPARAVIEW_USE_PYTHON=ON"
