@@ -32,7 +32,9 @@ set(MACOSX_APP_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/Applications")
 if(APPLE) # Mac
     set(ParaView_DIR "${CMAKE_CURRENT_BINARY_DIR}/ParaView-prefix/src/ParaView-build")
 
-    set(Set_arg_TTK_INSTALL_PLUGIN_DIR "-DTTK_INSTALL_PLUGIN_DIR=${CMAKE_INSTALL_PREFIX}/Applications/paraview.app/Contents/MacOS/plugins")
+    #set(Set_arg_TTK_INSTALL_PLUGIN_DIR "-DTTK_INSTALL_PLUGIN_DIR=${CMAKE_INSTALL_PREFIX}/lib/paraview-5.8/plugins")
+    set(Set_arg_TTK_INSTALL_PLUGIN_DIR "")
+
     # The version follows the TTK tutorial which installs the TTK plugins into the built ParaView, as opposed to the installed ParaView.
     #set(Set_arg_TTK_INSTALL_PLUGIN_DIR "-DTTK_INSTALL_PLUGIN_DIR=${CMAKE_BINARY_SOURCE_DIR}/ParaView-prefix/src/ParaView-build/bin/paraview.app/Contents/MacOS/plugins")
 elseif(UNIX) # Linux
