@@ -50,11 +50,6 @@ else(APPLE)
     set(OSPRay_URL "https://github.com/ospray/ospray/releases/download/v${OSPRay_version}/ospray-${OSPRay_version}.x86_64.linux.tar.gz")
 endiF(APPLE)
 
-#set(com "for each in ${CMAKE_CURRENT_BINARY_DIR}/OSPRay-prefix/src/OSPRay/*; do echo cp -rp \"\${each}\" ${CMAKE_INSTALL_PREFIX}; done\n")
-#string(STRIP "${com}" com)
-#execute_process(COMMAND bash -c "${com}")
-#message(FATAL_ERROR "com: ${com}")
-
 # OSPRay
 ExternalProject_Add(OSPRay
     #Download (macOS)
@@ -153,7 +148,7 @@ ExternalProject_Add(ParaView
             # Load ICON data
             "-DPARAVIEW_AUTOLOAD_PLUGIN_CDIReader=ON"
         # Build step
-            # A parallel build is faster, but it fails due to some oddity...
+            # Parallel builds fail on certain old Ubuntu versions, nonetheless...
             BUILD_COMMAND make "-j${Num_Processors}"
         # Install step
             # Fix bug in pvpython's install name list
