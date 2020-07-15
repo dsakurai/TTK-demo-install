@@ -43,29 +43,48 @@ else()
     message(FATAL_ERROR "Could not determine the operating system.")
 endif()
 
-set(OSPRay_version 1.8.5)
+option(TTK_DEMO_INSTALL_WITH_OSPRAY "Enable OSPRay raytracer (not well-maintained to do scripting with ParaView)" NO)
 
-if(ParaView_VERSION_NUMBER_FIRST_TWO STREQUAL "5.6")
-    # ParaView 5.6 works with an old OSPRay
-    set(OSPRay_version 1.7.3)
-endif()
-
-if (APPLE)
-    set(OSPRay_URL "https://github.com/ospray/ospray/releases/download/v${OSPRay_version}/ospray-${OSPRay_version}.x86_64.macosx.tar.gz")
-else(APPLE)
-    # presumably linux
-    set(OSPRay_URL "https://github.com/ospray/ospray/releases/download/v${OSPRay_version}/ospray-${OSPRay_version}.x86_64.linux.tar.gz")
-endiF(APPLE)
-
-# OSPRay
-ExternalProject_Add(OSPRay
-        INSTALL_DIR "${CMAKE_INSTALL_PREFIX}"
-        URL "${OSPRay_URL}"
-        DOWNLOAD_NO_EXTRACT
-        CONFIGURE_COMMAND "" # nothing to do for configuration
-        BUILD_COMMAND "" # nothing to build
-        INSTALL_COMMAND bash -c "${CMAKE_CURRENT_SOURCE_DIR}/utils/install_ospray.sh ${CMAKE_CURRENT_BINARY_DIR}/OSPRay-prefix/src/OSPRay ${CMAKE_INSTALL_PREFIX}"
+# Pass this to ParaView
+set(PARAVIEW_OSPRAY_SETTINGS
+        -D PARAVIEW_ENABLE_RAYTRACING=${TTK_DEMO_INSTALL_WITH_OSPRAY}
+        -D PARAVIEW_USE_OSPRAY=${TTK_DEMO_INSTALL_WITH_OSPRAY} # for old ParaView versions
     )
+
+if (TTK_DEMO_INSTALL_WITH_OSPRAY)
+
+    # Meant for ParaView 5.8.0
+    set(OSPRay_version 1.8.5)
+
+    if(ParaView_VERSION_NUMBER_FIRST_TWO STREQUAL "5.6")
+        # ParaView 5.6 works with an old OSPRay
+        set(OSPRay_version 1.7.3)
+    endif()
+
+    if (APPLE)
+        set(OSPRay_URL "https://github.com/ospray/ospray/releases/download/v${OSPRay_version}/ospray-${OSPRay_version}.x86_64.macosx.tar.gz")
+    else(APPLE)
+        # presumably linux
+        set(OSPRay_URL "https://github.com/ospray/ospray/releases/download/v${OSPRay_version}/ospray-${OSPRay_version}.x86_64.linux.tar.gz")
+    endiF(APPLE)
+
+    # OSPRay
+    ExternalProject_Add(OSPRay
+            INSTALL_DIR "${CMAKE_INSTALL_PREFIX}"
+            URL "${OSPRay_URL}"
+            DOWNLOAD_NO_EXTRACT
+            CONFIGURE_COMMAND "" # nothing to do for configuration
+            BUILD_COMMAND "" # nothing to build
+            INSTALL_COMMAND bash -c "${CMAKE_CURRENT_SOURCE_DIR}/utils/install_ospray.sh ${CMAKE_CURRENT_BINARY_DIR}/OSPRay-prefix/src/OSPRay ${CMAKE_INSTALL_PREFIX}"
+        )
+
+    # Pass OSPRay diretory to ParaView
+    set(PARAVIEW_OSPRAY_SETTINGS
+            ${PARAVIEW_OSPRAY_SETTINGS}
+            -D "OSPRAY_INSTALL_DIR=${CMAKE_INSTALL_PREFIX}/lib/cmake/ospray-${OSPRay_version}"
+        )
+
+endif (TTK_DEMO_INSTALL_WITH_OSPRAY)
 
 set(ParaView_CMAKE_BUILD_TYPE Release CACHE STRING "Build type for CMake")
 set(TTK_CMAKE_BUILD_TYPE Release CACHE STRING "Build type for TTK")
@@ -135,10 +154,8 @@ ExternalProject_Add(ParaView
             "-DPARAVIEW_USE_QTHELP=ON"
             "-DPARAVIEW_ENABLE_EMBEDDED_DOCUMENTATION=ON"
 
-            # OSPRay
-            -D PARAVIEW_ENABLE_RAYTRACING=ON
-            -D PARAVIEW_USE_OSPRAY=ON # for old ParaView versions
-            "-DOSPRAY_INSTALL_DIR=${CMAKE_INSTALL_PREFIX}/lib/cmake/ospray-${OSPRay_version}"
+            ${PARAVIEW_OSPRAY_SETTINGS}
+
             # Nice to have
             "-DPARAVIEW_USE_PYTHON=ON"
             "-DPARAVIEW_ENABLE_PYTHON=ON" # for old ParaViews
@@ -200,12 +217,14 @@ ExternalProject_Add_StepDependencies(TTK build
     ParaView-install
     )
 
-ExternalProject_Add_StepDependencies(ParaView download
-    OSPRay
-    )
-ExternalProject_Add_StepDependencies(TTK download
-    OSPRay
-    )
+if(TTK_DEMO_INSTALL_WITH_OSPRAY)
+    ExternalProject_Add_StepDependencies(ParaView download
+        OSPRay
+        )
+    ExternalProject_Add_StepDependencies(TTK download
+        OSPRay
+        )
+endif(TTK_DEMO_INSTALL_WITH_OSPRAY)
 
 if (APPLE)
     ExternalProject_Add_StepDependencies(ParaView Data
