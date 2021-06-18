@@ -71,17 +71,23 @@ echo "Enter the install location: (Default: ${PWD}/local)"
 read CMAKE_INSTALL_PREFIX
 CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX:-${PWD}/local}
 
+echo "Enter the build directory: (Default: build)"
+read BUILD_DIR
+BUILD_DIR=${BUILD_DIR:-build}
+
 echo "Before configuring this superproject..."
 echo "Do you wish to issue make commands manually right after we configure the system? y/[n]"
 #
 read -rsn1 manual_make
 
+echo "Starting configuration..."
+
 git submodule update --init --recursive .
 # checkout TTK version
-[[ ! -z "$TTK_version_tag" ]] && ( cd TTK && git checkout $TTK_version_tag )
+[[ ! -z "$TTK_version_tag" ]] && ( cd TTK && git fetch && git checkout $TTK_version_tag )
 
 # configure the superproject
-mkdir -p build  && cd build
+mkdir -p "${BUILD_DIR}" && cd "${BUILD_DIR}"
 cmake .. \
     "-DCMAKE_BUILD_TYPE=Release" \
     "-DTTK_CMAKE_BUILD_TYPE=${TTK_CMAKE_BUILD_TYPE}" \
